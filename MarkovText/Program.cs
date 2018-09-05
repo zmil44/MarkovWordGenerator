@@ -11,18 +11,20 @@ namespace MarkovText
     {
         static void Main(string[] args)
         {
+            var filePath = FilePath();
+            var lines = File.ReadAllLines(filePath);
+            var model = new MarkovModel();
+            model.AddWords(lines);
+        }
+        static string FilePath()
+        {
             //the path three directories above teh executable directory in VS
             //from https://stackoverflow.com/a/14549805
             string wanted_path = Path.GetDirectoryName(
+                Path.GetDirectoryName(
                     Path.GetDirectoryName(
-                        Path.GetDirectoryName(
-                            Directory.GetCurrentDirectory())));
-            string filePath = $"{wanted_path}\\words_alpha.txt";
-            var lines = File.ReadAllLines(filePath);
-            for (var i = 0; i < 10; i++)
-            {
-                Console.WriteLine(lines[i]);
-            }
+                        Directory.GetCurrentDirectory())));
+            return $"{wanted_path}\\words_alpha.txt";
         }
     }
 }

@@ -6,27 +6,20 @@ using System.Threading.Tasks;
 
 namespace MarkovText
 {
-  
-    //struct MiddleCharacter
-    //{
-
-    //}
-
-    //struct EndCharacter
-    //{
-
-    //}
 
     class MarkovModel
     {
-
+        private CharacterFunction[] firstCharacters;
+        private CharacterFunction[] middleCharacters;
+        private CharacterFunction[] endCharacters;
         public MarkovModel()
         {
-            InitCharacterFunction();
+            
+            firstCharacters = InitCharacterFunction();
+            middleCharacters = InitCharacterFunction();
+            endCharacters = InitCharacterFunction();
         }
-        private CharacterFunction[] firstCharacters = new CharacterFunction[26];
-        private CharacterFunction[] middleCharacters = new CharacterFunction[26];
-        private CharacterFunction[] endCharacters = new CharacterFunction[26];
+        
 
         public void AddWord(string word)
         {
@@ -44,12 +37,14 @@ namespace MarkovText
         {
             if (word.Length >= 2)
             {
-                char first = word[0];
-                char second = word[1];
+                char curr = word[0];
+                char next = word[1];
 
-                if (first >= 'a' && first <= 'z' && second >= 'a' && second <= 'z')
+                if (curr >= 'a' && curr <= 'z' && next >= 'a' && next <= 'z')
                 {
-                    firstCharacters[first - 'a'].nextChars[second - 'a'].occurances += 1;
+                    firstCharacters[curr - 'a'].nextChars[next - 'a'].occurances += 1;
+                    firstCharacters[curr - 'a'].totalNexts += 1;
+                    firstCharacters[curr - 'a'].occurances += 1;
                 }
                 else
                 {
@@ -60,12 +55,46 @@ namespace MarkovText
 
         private void AddMiddleCharacters(string word)
         {
-            throw new NotImplementedException();
+            if (word.Length >= 2)
+            {
+                for (int i = 1; i < word.Length - 2; i++)
+                {
+                    char curr = word[i];
+                    char next = word[i+ 1];
+
+
+
+                    if (curr >= 'a' && curr <= 'z' && next >= 'a' && next <= 'z')
+                    {
+                        middleCharacters[curr - 'a'].nextChars[next - 'a'].occurances += 1;
+                        middleCharacters[curr - 'a'].totalNexts += 1;
+                    }
+                    else
+                    {
+                        throw new ArgumentException("Non-lowercase character in AddMiddleCharacter.");
+                    }
+                }
+            }
         }
 
         private void AddEndCharacter(string word)
         {
-            throw new NotImplementedException();
+            if (word.Length >= 2)
+            {
+                word.Reverse();
+                char curr = word[0];
+                char next = word[1];
+
+                if (curr >= 'a' && curr <= 'z' && next >= 'a' && next <= 'z')
+                {
+                    endCharacters[curr - 'a'].nextChars[next - 'a'].occurances += 1;
+                    endCharacters[curr - 'a'].totalNexts += 1;
+                }
+                else
+                {
+                    throw new ArgumentException("Non-lowercase character in AddEndCharacter.");
+                }
+            }
         }
 
         public void AddWords(string[] words)
@@ -86,14 +115,16 @@ namespace MarkovText
             public CharacterFunction(char current)
             {
                 this.current = current;
+                this.occurances = 0;
                 this.totalNexts = 0;
                 nextChars = new CharInstance[26];
                 for (char i = 'a'; i <= 'z'; i++)
                 {
-                    nextChars[0] = new CharInstance() { character = i, occurances = 0 };
+                    nextChars[i-'a'] = new CharInstance() { character = i, occurances = 0 };
                 }
             }
             public char current;
+            public int occurances;
             public int totalNexts;
             public CharInstance[] nextChars;
         }

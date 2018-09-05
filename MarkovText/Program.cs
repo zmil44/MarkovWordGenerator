@@ -15,6 +15,26 @@ namespace MarkovText
             var lines = File.ReadAllLines(filePath);
             var model = new MarkovModel();
             model.AddWords(lines);
+
+            string input;
+
+            double real = 0;
+            double total = 0;
+
+            do
+            {
+                string word = model.GenerateWord(3, 10);
+                bool realWord = lines.Contains(word);
+
+                Console.WriteLine(word + (realWord ? " (real)" : ""));
+
+                input = Console.ReadLine();
+
+                total++;
+                real += realWord ? 1 : 0;
+            } while (input == "");
+
+            Console.WriteLine($"Percentage real: {real / total}");
         }
         static string FilePath()
         {
